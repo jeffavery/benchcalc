@@ -3,39 +3,41 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="BenchCalc: offline-friendly electronics calculators for your workbench.">
-  <title>BenchCalc · Resistor calculator</title>
+  <meta name="description" content="BenchCalc: offline-friendly resistor, capacitor, and inductor calculators for your workbench.">
+  <title>BenchCalc · Electronics calculators</title>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <script src="theme.js"></script>
-  <script defer src="calculators/resistor.js"></script><script defer src="app.js"></script>
+  <link rel="stylesheet" href="styles.css"><script src="theme.js"></script>
+  <script defer src="calculators/resistor.js"></script><script defer src="calculators/codes.js"></script><script defer src="calculators/inductor.js"></script><script defer src="graphics.js"></script><script defer src="calculators/circuits.js"></script><script defer src="design-ui.js"></script><script defer src="app.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#calculator-title">Skip to calculator</a>
   <header class="header"><a class="brand" href="index.html"><img src="assets/mark.svg" width="38" height="38" alt=""><span>Bench<span class="accent">Calc</span><small>YOUR ELECTRONICS WORKBENCH</small></span></a><label class="theme-label">Theme <select id="theme" aria-label="Color theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
   <main>
-    <div class="intro"><p class="eyebrow">A LITTLE CLARITY FOR YOUR COMPONENTS</p><h1>Know what’s on your bench.</h1><p>Read the bands. Find the value. Get back to building.</p></div>
+    <div class="intro"><p class="eyebrow">A LITTLE CLARITY FOR YOUR COMPONENTS</p><h1>Know what’s on your bench.</h1><p>Read the markings. Find the value. Get back to building.</p></div>
+    <div class="mobile-library"><label for="mobile-tool">Choose a calculator</label><select id="mobile-tool"></select></div>
     <div class="workspace">
-      <aside class="sidebar" aria-label="Calculator library"><p class="eyebrow">CALCULATORS</p><h2>Resistors</h2><a href="#calculator" class="active" aria-current="page"><span>4-band resistor</span><span>↗</span></a><p class="upcoming">On the workbench</p><ul><li>3, 5 &amp; 6-band resistors</li><li>3 &amp; 4-digit SMD resistors</li><li>Capacitor codes</li><li>4-band inductors</li></ul><div class="offline"><span class="dot"></span>Built to stay with you<p>Local files. No accounts.<br>No internet required.</p></div></aside>
+      <aside class="sidebar" aria-label="Calculator library"><p class="eyebrow">CALCULATORS</p><nav id="library" aria-label="Calculators"></nav><div class="offline"><span class="dot"></span>Built to stay with you<p>Local files. No accounts.<br>No internet required.</p></div></aside>
       <section id="calculator" class="calculator" aria-labelledby="calculator-title">
-        <div class="section-heading"><div><p class="eyebrow">RESISTOR / COLOR CODE</p><h2 id="calculator-title">4-band resistor</h2></div><span class="tag">2 digits + multiplier + tolerance</span></div>
+        <div class="section-heading"><div><p class="eyebrow" id="calculator-kicker">RESISTORS / COLOR CODE</p><h2 id="calculator-title" tabindex="-1">4-band resistor</h2></div><span class="tag" id="calculator-tag">2 digits + multiplier + tolerance</span></div>
+        <div id="component-tools">
         <div class="visual">
-          <svg id="resistor" viewBox="0 0 680 180" role="img" aria-labelledby="resistor-title resistor-desc">
-            <title id="resistor-title">Four-band resistor</title><desc id="resistor-desc">Yellow, violet, red, gold: 4.7 kiloohms, plus or minus 5 percent.</desc>
-            <defs><linearGradient id="body" x2="0" y2="1"><stop stop-color="#f1dbb0"/><stop offset=".48" stop-color="#dfc390"/><stop offset="1" stop-color="#bfa26c"/></linearGradient><linearGradient id="wire" gradientUnits="userSpaceOnUse" x1="0" y1="84" x2="0" y2="96"><stop stop-color="#aab3bd"/><stop offset=".45" stop-color="#e4e8ed"/><stop offset="1" stop-color="#7b8691"/></linearGradient><clipPath id="body-clip"><path d="M194 40 Q173 40 173 62 L173 118 Q173 140 194 140 L221 140 Q239 130 257 130 H421 Q440 130 458 140 H486 Q507 140 507 118 V62 Q507 40 486 40 H458 Q440 50 421 50 H257 Q239 50 221 40 Z"/></clipPath></defs>
-            <path d="M30 90 H178 M503 90 H650" stroke="url(#wire)" stroke-width="11" stroke-linecap="round"/>
-            <path d="M194 40 Q173 40 173 62 L173 118 Q173 140 194 140 L221 140 Q239 130 257 130 H421 Q440 130 458 140 H486 Q507 140 507 118 V62 Q507 40 486 40 H458 Q440 50 421 50 H257 Q239 50 221 40 Z" fill="url(#body)" stroke="#a88d60" stroke-width="2"/>
-            <g clip-path="url(#body-clip)"><rect id="band-0" x="213" y="38" width="24" height="105" fill="#f0ce38"/><rect id="band-1" x="274" y="38" width="24" height="105" fill="#9254b9"/><rect id="band-2" x="335" y="38" width="24" height="105" fill="#dc343e"/><rect id="band-3" x="448" y="38" width="24" height="105" fill="#c39a42"/></g>
-            <g class="svg-label" text-anchor="middle"><text x="225" y="167">1</text><text x="286" y="167">2</text><text x="347" y="167">×</text><text x="460" y="167">±</text></g>
-          </svg>
-          <div id="result" class="result" aria-live="polite" aria-atomic="true"><strong id="value">4.7 kΩ</strong><span id="tolerance">±5%</span><p id="range">4.465 kΩ – 4.935 kΩ</p></div>
+          <div id="shape-picker" class="shape-picker" role="group" aria-label="Capacitor style" hidden><button type="button" data-shape="ceramic" aria-pressed="true">Ceramic</button><button type="button" data-shape="film" aria-pressed="false">Film</button><button type="button" data-shape="tantalum" aria-pressed="false">Tantalum</button></div>
+          <div id="graphic"></div>
+          <div id="result" class="result" aria-live="polite" aria-atomic="true"><strong id="value"></strong><span id="tolerance"></span><p id="range"></p><p id="tempco" hidden></p></div>
         </div>
-        <div class="controls"><div class="control-heading"><h3>Colors to value</h3><p>Choose a color for each band.</p></div><div id="band-controls" class="band-controls"></div>
-          <form id="value-form" class="value-form" novalidate><div class="control-heading"><h3>Value to colors</h3><p>Enter a resistance to find its bands.</p></div><div class="value-inputs"><label>Resistance<input id="resistance" type="text" inputmode="decimal" value="4.7" autocomplete="off" aria-describedby="value-help error"></label><label>Unit<select id="unit"><option value="1">Ω</option><option value="1000" selected>kΩ</option><option value="1000000">MΩ</option><option value="1000000000">GΩ</option></select></label><button type="submit">Find colors <span aria-hidden="true">→</span></button></div><p id="value-help" class="help">Uses the tolerance selected above. Two significant digits; no automatic rounding.</p><p id="error" role="alert" hidden></p></form>
+        <div class="controls">
+          <div id="band-area"><div class="control-heading"><h3>Colors to value</h3><p>Choose a color for each band.</p></div><div id="band-controls" class="band-controls"></div></div>
+          <form id="code-form" novalidate hidden><div class="control-heading"><h3>Code to value</h3><p>Read the marking on your component.</p></div><div class="code-inputs"><div><label for="code">Printed code</label><input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="code-help code-error"></div><button type="submit">Read code →</button></div><p class="help" id="code-help"></p><p id="code-error" class="error" role="alert" hidden></p></form>
+          <form id="value-form" class="value-form" novalidate><div class="control-heading"><h3 id="reverse-heading">Value to colors</h3><p id="reverse-description">Enter a resistance to find its bands.</p></div><div class="value-inputs"><div><label id="quantity-label" for="resistance">Resistance</label><input id="resistance" type="text" inputmode="decimal" autocomplete="off" aria-describedby="value-help error"></div><div><label for="unit">Unit</label><select id="unit"></select></div><button id="reverse-button" type="submit">Find colors →</button></div><p id="value-help" class="help"></p><p id="error" class="error" role="alert" hidden></p></form>
+          <div class="control-footer"><span>Exact values. No guesswork.</span><button type="button" id="reset" class="text-button">Reset example</button></div>
         </div>
-        <details><summary>How to read a 4-band resistor</summary><p>Start at the end opposite the separated tolerance band. The first two colors give the digits, the third multiplies them, and the fourth gives the tolerance.</p><p id="formula">47 × 100 Ω = 4.7 kΩ</p><p>The range shows nominal resistance ± tolerance. It does not describe power rating, temperature behavior, or the actual measured resistance.</p></details>
+        <details id="reading"><summary id="help-title">How to read a resistor</summary><p id="reading-help"></p><p id="formula" class="formula"></p><p id="limits-help"></p><p id="sources" class="sources"></p></details>
+        <details id="reference-area"><summary>Color reference table</summary><div class="table-scroll"><table><thead id="reference-head"></thead><tbody id="reference-body"></tbody></table></div></details>
+        </div>
+        <div id="design-tools" hidden></div>
       </section>
     </div>
-    <footer>BenchCalc <span>Made for the workbench. Ready wherever you are.</span><span>FIRST BUILD · 4-BAND RESISTOR</span></footer>
-  </main><noscript><p>Enable JavaScript to use the calculator. All scripts are included locally.</p></noscript>
+    <footer>BenchCalc <span>Made for the workbench. Ready wherever you are.</span><span>RESISTORS · CAPACITORS · INDUCTORS</span></footer>
+  </main><noscript><p>Enable JavaScript to use the calculators. All scripts are included locally.</p></noscript>
 </body>
 </html>

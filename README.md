@@ -1,37 +1,64 @@
 # BenchCalc
 
-A self-contained electronics workbench. Original SVG artwork, plain HTML/CSS/JavaScript, no external fonts, libraries, CDNs, analytics, or build step.
+A self-contained electronics workbench with original SVG artwork and plain HTML, CSS, and JavaScript. No external fonts, libraries, CDNs, analytics, or build step.
 
 ## Use locally
 
-Open `public/index.html` in a modern browser. All calculator functionality works without a server or internet connection. Keep the entire `public` directory together. Theme defaults to the system setting; an explicit preference is saved when browser storage is available.
+Open `public/index.html` in a modern browser, or serve the `public` directory with any static web server. Keep that entire directory together. Calculator scripts load from local files; external links in the reading guides are optional references. Theme follows the system by default, with light/dark overrides saved when browser storage is available.
 
-## First increment
+## Circuit tools
 
-- Responsive shared shell, system/light/dark theme.
-- Four-band resistor: colors to resistance, tolerance, and range.
-- Resistance to colors with exact two-significant-digit representation, 0.10 Ω through 99 GΩ. Invalid values leave the last valid result intact and show an error. The chosen tolerance is preserved.
-- Accessible native inputs and color names; original SVG resistor updates with selections.
+The local version adds these tools in Jeffrey's preference order:
 
-## Project structure
+1. LED resistor: series LED count, upward E24 selection, nominal current, dissipation, and 2× power-rating margin.
+2. 555 timer: standard astable frequency/duty/high/low/period and monostable pulse duration.
+3. Copper wire gauge/current reference: selected even AWG sizes 10–30, two-conductor DC voltage drop, loss, and explicitly qualified current guidelines.
+4. Ohm's law: all six pairs of known positive voltage, current, resistance, and power.
+5. Voltage divider: unloaded output or an optional parallel load, with current and resistor dissipation.
+6. Current divider: two parallel branches, equivalent resistance, voltage, current, and power.
+7. Series/parallel resistors: 2–20 values in a common selectable unit.
+8. Series/parallel capacitors: 2–20 values in a common selectable unit.
 
-`public/app.js` owns DOM interactions, `public/theme.js` owns theme initialization, and `public/styles.css` owns the shared shell. Pure calculator logic lives in `public/calculators/resistor.js`, independent of the UI. New calculators should follow this split, reuse the shared controls/results styling, and supply tests of their conversion logic. Classic local scripts intentionally allow direct `file://` use.
+These worksheets show approximate nominal results and their assumptions. The 555 graphic is a timing model, not a complete wiring schematic. Wire current figures are guidelines, not code-rated ampacities. Results update on Calculate; mode changes recalculate automatically. Invalid circuit inputs hide the result until corrected. Inputs are retained while switching tools in the same page.
 
-Planned: 3/5/6-band resistors, 3/4-digit SMD resistors, ceramic/film/tantalum 3-digit capacitor codes, and 4-band inductors. EIA-96 is outside scope.
+Pure circuit logic lives in `public/calculators/circuits.js`; worksheet definitions, original SVG concepts, and the shared form renderer live in `public/design-ui.js`.
+
+## Component-code calculator library
+
+- 3-, 4-, 5-, and 6-band resistors: colors to resistance and resistance to colors, tolerance ranges, and sixth-band temperature coefficient.
+- 3- and 4-digit SMD resistors: numeric codes, R decimal codes, and zero-ohm jumpers in both directions.
+- 3-digit capacitor codes: code/value conversion in pF, nF, and µF, including multiplier digits 8 and 9. Original ceramic, film, and tantalum illustrations share the same calculation.
+- 4-band EIA inductors: colors/value conversion in µH, mH, and H. Supported multiplier colors are silver, gold, black, brown, red, orange, and yellow; tolerances are gold 5%, silver 10%, and black 20%.
+
+The calculator library works on desktop and mobile. Valid values are retained separately for each tool while switching within the page; reloading returns to that tool's example. Each tool has an example reset and reading guide. Banded tools also have a color reference table. Invalid inputs preserve the last valid result and show an error. Reverse conversions never intentionally round an unrepresentable value.
+
+EIA-96, military inductor codes, and manufacturer-specific marking systems are outside scope. Printed capacitance/resistance values do not establish voltage, power, current rating, or tolerance; separate markings and datasheets provide these.
+
+## Structure
+
+- `public/app.js`: navigation, per-tool state, shared controls, and result presentation.
+- `public/calculators/resistor.js`: pure resistor conversions and color tables.
+- `public/calculators/codes.js`: pure SMD and capacitor code conversions.
+- `public/calculators/inductor.js`: pure EIA inductor conversions.
+- `public/graphics.js`: original component SVG drawings.
+- `public/styles.css` and `public/theme.js`: shared layout and appearance.
+
+Classic local scripts intentionally support direct file use. New calculators should keep conversion logic independent from the UI and reuse the shared shell.
 
 ## Test
 
-With Node.js installed (development only): `node --test tests/resistor.test.cjs`.
-Tests cover known examples, boundary values, invalid inputs, and all 8,640 supported value/tolerance combinations.
+With Node.js installed for development only:
 
-## ShopDocker
+`node --test tests/*.test.cjs`
 
-Repository name: `benchcalc`. Host directory: `/opt/docker/benchcalc`. Target URL: `https://electronics.jeffavery.com`.
+Twenty-one test groups cover known manufacturer examples, value boundaries, rejected inputs, supported temperature coefficients, and exhaustive supported magnitude round trips. Browser checks also cover all eight modes, forward/reverse interactions, errors, retained state, theme persistence, and responsive layouts. See `STATUS.md` for verification limits.
 
-Run `docker compose up -d --build` from the project directory. The container joins the existing external `proxy` network and publishes no host port. Configure the hostname through Caddy Manager with upstream `http://benchcalc:80`, following the lab's existing access and certificate conventions.
+## Unit converter
 
-Only the static `public` files are served. Docker needs an image download for the initial build; the web app itself has no external runtime dependencies. For fully offline storage, keep the static folder as well as a saved container image if Docker recovery without internet is required.
+Capacitance (pF/nF/µF/F), resistance (Ω/kΩ/MΩ), and frequency/period (Hz/kHz/MHz and s/ms/µs). The 555 calculator also supports resistors from target timing.
 
-Initial deployment rollback: `docker compose down` from this directory stops only BenchCalc. Remove its newly added host entry through Caddy Manager if routing has been configured. For subsequent releases, record the current Git commit and retain its built image before rebuilding.
+## Deployment
 
-The lab reference documents recursive `/opt/docker` backups. Confirm the installed backup script's scope and a subsequent archive before claiming an actual BenchCalc backup. No app database or writable persistent volume is needed.
+ShopDocker path: `/opt/docker/benchcalc`. GitHub: `jeffavery/benchcalc`. The Docker service joins `proxy` with no host port. Caddy Manager upstream: `http://benchcalc:80`. Target hostname: `electronics.jeffavery.com`; routing still pending.
+
+Backup scope includes `/opt/docker` recursively; archive inclusion is not yet verified. Previous image preserved as `benchcalc-rollback:b74993e`.
